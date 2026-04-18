@@ -39,11 +39,12 @@ public class ClientHandler implements Runnable{
             String jsonLine;
             while ((jsonLine = in.readLine()) != null) {
                 System.out.println("Received " + jsonLine);
-                // move 10
-                // robot.name() + " " + jsonline
+
                 //Parse the JSON using Jackson
                 //Jackson: JSON as String -> Request Object
-                //Deserialization- turning a flat string into a Java object
+
+                //Deserialization
+                // jsonLine = {"robot": "Bender", "command": "move", "arguments": ["5"]}
                 Request request = mapper.readValue(jsonLine, Request.class);
 
                 System.out.println("From " + clientSocket.getInetAddress() + ":" + request.getCommand());

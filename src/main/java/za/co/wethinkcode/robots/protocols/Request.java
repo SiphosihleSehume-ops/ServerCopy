@@ -3,6 +3,7 @@ package za.co.wethinkcode.robots.protocols;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
+//Known as DTOs: Data Transfer Objects
 public class Request {
    //@JsonProperty
     // Make use of the Jackson annotations here
