@@ -2,6 +2,7 @@ package za.co.wethinkcode.robots.protocols.commands;
 
 import za.co.wethinkcode.robots.protocols.Request;
 import za.co.wethinkcode.robots.protocols.Response;
+import za.co.wethinkcode.robots.server.ClientHandler;
 import za.co.wethinkcode.robots.server.World;
 
 public abstract class CommandHandler {
@@ -23,7 +24,10 @@ public abstract class CommandHandler {
       }
 
       public abstract Response execute(Request request, World world);
-           //Something here
+
+    public void execute(ClientHandler clientHandler) {
+    }
+    //Something here
 
 }
 

@@ -1,15 +1,14 @@
 package za.co.wethinkcode.robots.server;
 
 import za.co.wethinkcode.flow.Recorder;
+import za.co.wethinkcode.robots.protocols.Response;
+import za.co.wethinkcode.robots.protocols.commands.CommandHandler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
-//
-//int MAX_POOL = 100;
-//ExecutorService pool = Executors.newCachedThreadPool(MAX_POOL);
 
 /*
 * Handle multiple clients (
@@ -19,6 +18,7 @@ public class MultiServer {
     public static void main(String[] args) throws IOException {
         int PORT = 9090;
         final int MAX_CLIENTS = 50;
+
         ExecutorService executor = Executors.newFixedThreadPool(MAX_CLIENTS);
 
         //Since this will be a MultiServer, we need not to create our pipelines
@@ -29,10 +29,14 @@ public class MultiServer {
             while (true) {
                 //The Client Socket here is the Server Socket listening for incoming requests
                 Socket clientSocket = serverSocket.accept();
+                System.out.println("New Robot has been connected " + clientSocket.getInetAddress());
+
+                executor.execute(new ClientHandler(clientSocket));
+
             }
 
         } catch (IOException e) {
-
+            System.out.println("Error " + e.getMessage());
         }
 
 

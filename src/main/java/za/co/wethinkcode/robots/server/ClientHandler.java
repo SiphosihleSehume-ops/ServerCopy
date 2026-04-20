@@ -29,6 +29,10 @@ public class ClientHandler implements Runnable{
         this.world = world;
     }
 
+    public ClientHandler(Socket socket) {
+        this.clientSocket = socket;
+    }
+
     @Override
     public void run() {
 
