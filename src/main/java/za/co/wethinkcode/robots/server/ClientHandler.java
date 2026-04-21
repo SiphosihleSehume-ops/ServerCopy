@@ -37,6 +37,7 @@ public class ClientHandler implements Runnable{
     public void run() {
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+             //flush forces all buffered data to be written to their destination
              PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
             //Take in jsonLine; block until; client engages
@@ -44,7 +45,7 @@ public class ClientHandler implements Runnable{
             while ((jsonLine = in.readLine()) != null) {
                 System.out.println("Received " + jsonLine);
 
-                //Parse the JSON using Jackson
+                //Parse the JSON using Jackson.
                 //Jackson: JSON as String -> Request Object
 
                 //Deserialization
