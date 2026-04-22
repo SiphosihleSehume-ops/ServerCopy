@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ClientHandler implements Runnable{
     //Implement ObjectMapper
-    private ObjectMapper mapper = new ObjectMapper(); //Thread safe and reuse possible
+    private final ObjectMapper mapper = new ObjectMapper(); //Thread safe and reuse possible
     //Owns Read/Write pipelines
     private final Socket clientSocket;
 

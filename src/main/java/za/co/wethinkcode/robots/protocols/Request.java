@@ -8,7 +8,7 @@ public class Request {
    //@JsonProperty
     // Make use of the Jackson annotations here
     @JsonProperty("robot")
-    private String robotName;
+    private String robot;
 
     @JsonProperty("command")
     private String command;
@@ -20,7 +20,7 @@ public class Request {
 
     //Method Overloading
     public Request(String robot, String command, List<String> args) {
-        this.robotName = robot;
+        this.robot = robot;
         this.command = command;
         this.arguments = args;
     }
@@ -28,7 +28,7 @@ public class Request {
     //Jackson does need your Getters and Setters
     //Getters
     public String getRobotName() {
-        return robotName;
+        return robot;
     }
 
     public String getCommand () {
@@ -41,7 +41,7 @@ public class Request {
 
     //Setters
     public void setRobotName(String name) {
-        this.robotName = name;
+        this.robot = name;
     }
 
     public void setCommand(String cmd) {

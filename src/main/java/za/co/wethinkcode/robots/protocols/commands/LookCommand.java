@@ -1,5 +1,5 @@
 package za.co.wethinkcode.robots.protocols.commands;
 
-public class LockCommand {
+public class LookCommand {
     //Command that handles Robot World View or Vision
 }

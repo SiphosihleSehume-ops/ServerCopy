@@ -1,14 +1,25 @@
 package za.co.wethinkcode.robots.protocols;
 
 import za.co.wethinkcode.robots.server.RobotState;
+import za.co.wethinkcode.robots.server.World;
+import za.co.wethinkcode.robots.server.WorldState;
+
 
 public class Response {
+//    private World world = new World(Config config);
     private String result;
-    private RobotState robotState; //Current robot state
+    private World state = //Current robot state
+    private RobotState robotState;
 
-    public Response(String result, Object data, RobotState status) {
+    public Response(String result, World world) {
         this.result = result;
-        this.robotState = status;
+        this.state = world; //Object returns message if the Request is not passed in correctly
+    }
+
+    public Response(String result, World world, RobotState state) {
+        this.result = result; // "OK" if result successful
+        this.state = world;
+        this.robotState = state;
     }
 
     //Getters
@@ -16,7 +27,11 @@ public class Response {
         return result;
     }
 
-    public RobotState getStatus() {
+    public WorldState getStatus() {
+        return state;
+    }
+
+    public RobotState getRobotState() {
         return robotState;
     }
 
@@ -25,8 +40,10 @@ public class Response {
         this.result = result;
     }
 
-    public void setStatus(RobotState status) {
-        this.robotState = status;
+    public void setStatus(World status) {
+        this.state = status;
     }
+
+    public void setRobotState(RobotState state) {this.robotState = state; }
 
 }
