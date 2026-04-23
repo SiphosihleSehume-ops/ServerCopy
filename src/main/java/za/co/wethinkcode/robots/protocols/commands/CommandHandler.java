@@ -2,6 +2,7 @@ package za.co.wethinkcode.robots.protocols.commands;
 
 import za.co.wethinkcode.robots.protocols.Request;
 import za.co.wethinkcode.robots.protocols.Response;
+import za.co.wethinkcode.robots.server.Robot;
 import za.co.wethinkcode.robots.server.World;
 
 public abstract class CommandHandler {
@@ -13,25 +14,26 @@ public abstract class CommandHandler {
            this.world = world;
       }
 
-     public static Response create(Request request) {
+     public static Response execute(Robot targetROBOT) {}
 
-      String instruction = request.getCommand();
-      if (instruction == null) {
-          return new Response("Error", World.stts());
-      }
-      String[] args = instruction.toLowerCase().trim().split(" ");
-      String command = args[0];
-      switch (command) {
-          case "dump" -> new DumpCommand();
-          case "quit" -> new QuitCommand();
-          case "look" -> new LookCommand();
-          case "robots" -> new RobotsCommand();
-          case "state" -> new StateCommand();
-        default -> throw new IllegalArgumentException("Unsupported command: " + command);
-    }
+//         String instruction = request.getCommand();
+//         if (instruction == null) {
+//             return new Response("Error", ");
+//         }
+//         String[] args = instruction.toLowerCase().trim().split(" ");
+//         String command = args[0];
+//         switch (command) {
+//             case "dump" -> new DumpCommand();
+//             case "launch" -> new LaunchCommand();
+//             case "quit" -> new QuitCommand();
+//             case "look" -> new LookCommand();
+//             case "robots" -> new RobotsCommand();
+//             case "state" -> new StateCommand();
+//             default -> throw new IllegalArgumentException("Unsupported command: " + command);
 
 
-      public abstract Response execute(Request request, World world);
+
+//      public abstract Response execute(Request request, World world);
 
 }
 
