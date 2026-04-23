@@ -10,8 +10,7 @@ import java.util.*;
 
 
 public class World {
-    //Added this Object
-    private Message message = new Message("something");
+
     private final int width;
     private final int height;
     private final int visibility;
@@ -47,6 +46,7 @@ public class World {
         this.repairTime = repairTime;
         this.reloadTime = reloadTime;
 
+
     }
 
     public int visibility(){
@@ -74,7 +74,7 @@ public class World {
         return robotPositions.size();
     }
 
-    public Response addRobot(Robot robot, Position position) { //Should return a string
+    public void addRobot(Robot robot, Position position) { //Should return a string
         if (robotNameTaken(robot)){
             throw new IllegalArgumentException(robot.name() + " has been taken");
         }
@@ -84,8 +84,7 @@ public class World {
         }
 
         if (isOccupied(position)) {
-            message.setMessage("No more space in this world");
-            return new Response("ERROR", message);
+            throw new IllegalStateException("Position already occupied");
         }
 
         robot.setPosition(position);
@@ -211,14 +210,6 @@ public class World {
                 reloadTime,
                 shieldMax);
     }
-
-    //Added this code logic
-    public static World stts() {
-        if ()
-        System.out.println("Unsupported Command");
-        return null;
-    }
-
 }
 
 //public class World {
