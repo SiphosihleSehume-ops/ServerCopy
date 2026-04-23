@@ -1,5 +1,6 @@
 package za.co.wethinkcode.robots.server;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import za.co.wethinkcode.robots.protocols.Request;
 import za.co.wethinkcode.robots.protocols.Response;
@@ -20,13 +21,13 @@ public class ClientHandler implements Runnable{
 
     //Create a CommandHandler Object
     CommandHandler commandHandler;
-    World world;
+    Robot targetRobot;
 
     //Initialize `commandHandler` and `world` objects
-    public ClientHandler(Socket socket, CommandHandler commandHandler, World world) throws IOException{
+    public ClientHandler(Socket socket, CommandHandler commandHandler, Robot robot) throws IOException{
         this.clientSocket = socket;
         this.commandHandler = commandHandler;
-        this.world = world;
+        this.targetRobot = robot;
     }
 
     public ClientHandler(Socket socket) {
@@ -55,17 +56,20 @@ public class ClientHandler implements Runnable{
                 System.out.println("From " + clientSocket.getInetAddress() + ":" + request.getCommand());
 
                 //Response == Handling Command (Execute)
-                Response response = commandHandler.execute(request, world);
+                Response response = commandHandler.execute(targetRobot);
 
                 //Jackson Response object -> JSON String
                 //Serialization
                 String jsonResponse;
                 jsonResponse = mapper.writeValueAsString(response);
-                out.println(jsonResponse);
+                out.println(jsonResponse); //RETURN:mapper.writeValueAsString(response);
 
             }
-        } catch (IOException e) {
-            System.err.print("Server error " + e.getMessage());
+        } catch (JsonProcessingException e) {
+            return mapper.writeValueAsString(Response.error("Could not parse arguments"));
+
+        } catch (UnsupportedCommandException e ) {
+            return mapper.writeValueAsString(Response.error("Unsupported command"));
         }
     }
 //Core loop: Receive -> Deserialize -> Executes -> Serialize -> Send
