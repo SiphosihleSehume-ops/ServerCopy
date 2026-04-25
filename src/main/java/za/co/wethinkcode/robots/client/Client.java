@@ -31,9 +31,9 @@ public class Client {
 
                 String response = in.readLine(); //Keeps the Client window open for incoming responses
                 //Serialize (OBJECT -> JSON str)
-                mapper.readValue(response,  Response.class);
-
-                System.out.println("Received response: " + response);
+                Response json = mapper.readValue(response,  Response.class);
+                String prettyResponse = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+                System.out.println("Received response:\n " + prettyResponse);
 
                 if ("quit".equalsIgnoreCase(jsonLine)) break;
             }
