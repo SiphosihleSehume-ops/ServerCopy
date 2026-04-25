@@ -1,5 +1,14 @@
 package za.co.wethinkcode.robots.protocols;
 
-public enum Status {
-    NORMAL, REPAIR, RELOAD, DEAD
+public class Status {
+    public String dead;
+    public String normal;
+    public String repair;
+    public String reload;
+
+    public Status() {}
+
+    public String normal() {
+        return normal;
+    }
 }

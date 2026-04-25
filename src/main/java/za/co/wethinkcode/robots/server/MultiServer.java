@@ -1,6 +1,7 @@
 package za.co.wethinkcode.robots.server;
 
 import za.co.wethinkcode.flow.Recorder;
+import za.co.wethinkcode.robots.protocols.commands.Command;
 
 import java.io.IOException;
 import java.net.*;
@@ -16,6 +17,9 @@ public class MultiServer {
         int PORT = 5001;
         final int MAX_CLIENTS = 50;
 
+        //Objects so .execute() does not return null
+        Command command = new Command();
+
         ExecutorService executor = Executors.newFixedThreadPool(MAX_CLIENTS);
 
         //Since this will be a MultiServer, we need not create our pipelines
@@ -29,7 +33,7 @@ public class MultiServer {
                 System.out.println("New Robot has been connected " + clientSocket.getInetAddress());
 
                 //Handing over individual client to ClientHandler
-                executor.execute(new ClientHandler(clientSocket));
+                executor.execute(new ClientHandler(clientSocket, command, targetRobot));
 
                 executor.shutdown();
             }
