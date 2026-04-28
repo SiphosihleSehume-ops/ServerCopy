@@ -1,6 +1,8 @@
 package za.co.wethinkcode.robots.protocols;
 
+import za.co.wethinkcode.robots.robot.Robot;
 import za.co.wethinkcode.robots.robot.RobotStatus;
+import za.co.wethinkcode.robots.server.WorldState;
 
 import java.util.Map;
 
@@ -8,18 +10,18 @@ import java.util.Map;
 public class Response {
 //    private World world = new World(Config config);
     private String result;
-    private Map<String, String> data; //Current robot state
-    private RobotStatus robotState;
+    private Map<String, Object> data; //Current robot state
+    private Map<String, Object> worldState;
 
-    public Response(String result, Map<String, String> data) {
+    public Response(String result, Map<String, Object> data) {
         this.result = result;
         this.data = data; //Object returns message if the Request is not passed in correctly
     }
 
-    public Response(String result, Map<String, String> data, RobotStatus state) {
+    public Response(String result, Map<String, Object> data, Map<String, Object> state) {
         this.result = result; // "OK" if result successful
         this.data = data;
-        this.robotState = state;
+        this.worldState = state;
     }
 
     public Response(String message) {
@@ -29,11 +31,11 @@ public class Response {
     public Response() {}
 
     //Factory methods
-    public static Response ok(Map<String, String> data, RobotStatus state) {
+    public static Response ok(Map<String, Object> data, Map<String, Object> target) {
         Response response = new Response();
         response.setResult("OK");
         response.setData(data);
-        response.setState(state);
+        response.setState(target);
         return response;
     }
 
@@ -52,12 +54,12 @@ public class Response {
         return result;
     }
 
-    public Map<String, String> getStatus() {
+    public Map<String, Object> getStatus() {
         return data;
     }
 
-    public RobotStatus getRobotState() {
-        return robotState;
+    public Map<String, Object> getRobotState() {
+        return worldState;
     }
 
     //Setters
@@ -65,10 +67,10 @@ public class Response {
         this.result = result;
     }
 
-    public void setData(Map<String, String> status) {
+    public void setData(Map<String, Object> status) {
         this.data = status;
     }
 
-    public void setState(RobotStatus state) {this.robotState = state; }
+    public void setState(Map<String, Object> state) {this.worldState = state; }
 
 }

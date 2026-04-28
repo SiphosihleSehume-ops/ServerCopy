@@ -51,6 +51,11 @@ public class Position {
         boolean withinRight = this.x <= bottomRight.getX();
         return withinTop && withinBottom && withinLeft && withinRight;
     }
+
+    @Override
+    public String toString() {
+        return "[" + getX() + " ," + getY() + "]";
+    }
 }
 
 
