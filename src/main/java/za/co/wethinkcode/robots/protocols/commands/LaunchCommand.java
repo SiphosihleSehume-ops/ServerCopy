@@ -15,12 +15,8 @@ public class LaunchCommand extends Command {
             return Response.error("No more space in this world");
         }
 
-        Map<String, Object> data = Map.of(
-                "position", target.getPosition(),
-                "visibility", world.getVisibility(),
-                "shields", target.getShieldMax()
-        );
+        Map<String, Object> data = world.state(target);
 
-        return Response.ok(data, target.getCurrentState());
+        return Response.ok(data, target.state());
     }
 }
