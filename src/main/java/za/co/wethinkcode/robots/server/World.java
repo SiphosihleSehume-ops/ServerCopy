@@ -18,6 +18,7 @@ public class World {
     private final int shieldMax;
     private final int reloadTime;
     private final int repairTime;
+    private final int MAX_CLIENTS = 50; //Should be later passed in through config file
     private final Map<Position, Robot> robotPositions = new HashMap<>();
     private final ArrayList<Obstacle> obstacles = new ArrayList<>();
 
@@ -49,8 +50,8 @@ public class World {
 
     }
 
-
-    public int visibility(){
+    //Changed to getVisibility
+    public int getVisibility(){
         return visibility;
     }
 
@@ -101,7 +102,7 @@ public class World {
         }
 
         Position intialRobotPosition = generatePosition();
-        robot.updatePosition(intialRobotPosition);
+        robot.updatePosition(position.getX(), position.getY());
         robotPositions.put(intialRobotPosition, robot);
     }
 
@@ -138,7 +139,7 @@ public class World {
         }
 
         robotPositions.remove(oldPosition);
-        robot.updatePosition(newPosition);
+        robot.updatePosition(newPosition.getX(), newPosition.getY());
         robotPositions.put(newPosition, robot);
 
         return true;
@@ -174,6 +175,16 @@ public class World {
             }
 
         }
+    }
+
+    /**
+     * Determines if the World has reached full capacity
+     *
+     * @return {@code true} if the World is full
+     *         {@code false} if the World has space
+     * */
+    public boolean isFull() {
+        return robotPositions.size() <= MAX_CLIENTS;
     }
 
     public boolean isOccupied(Position pos) {
@@ -218,16 +229,19 @@ public class World {
         return false;
     }
 
-    public WorldState state(Robot robot){
-        int x = robot.getCurrentPosition().getX();
-        int y = robot.getCurrentPosition().getY();
-        int[] position = new int[] {x, y};
-
-        return new WorldState(position,
-                visibility,
-                repairTime,
-                reloadTime,
-                shieldMax);
+    public Map<String, Object> state(Robot robot){
+        return Map.of(
+                "position", robot.getCurrentPosition().toString(),
+                "visibility", visibility,
+                "reload", reloadTime,
+                "repair", repairTime,
+                "shields", shieldMax
+        );
+//        return new WorldState(position,
+//                visibility,
+//                repairTime,
+//                reloadTime,
+//                shieldMax);
     }
 
 }
