@@ -2,17 +2,19 @@ package za.co.wethinkcode.robots.protocols.commands;
 
 import za.co.wethinkcode.robots.protocols.Request;
 import za.co.wethinkcode.robots.protocols.Response;
-import za.co.wethinkcode.robots.robot.Robot;
+import za.co.wethinkcode.robots.robot.*;
 import za.co.wethinkcode.robots.server.World;
+import za.co.wethinkcode.robots.server.WorldState;
 
 import java.util.Map;
 
-public abstract class Command {
+public class Command {
 
 //     public abstract Response execute(Robot targetRobot);
 
-          private Request request = new Request();
+          private final Request request = new Request();
           private final String launch = "Launch";
+          public World worldState;
 
           private final Map<String, String> data = Map.of(
                   "key1", "value1",
@@ -24,22 +26,15 @@ public abstract class Command {
                if (!request.getCommand().equals("Launch")) {
                     return Response.error("I am not programmed to do that.");
                }
-               Map<String, Object> state = Map.of(
-                       "position", target.getCurrentPosition(),
-                       "direction", target.getCurrentDirection(),
-                       "shields", target.getShields(),
-                       "shots", target.getShots(),
-                       "status", target.getStatus()
-               );
 
                if (launch.equalsIgnoreCase("LAUNCH")){
-                    return Response.ok(data, state);
+                   return Response.ok(worldState.state(target), target.state());
                }
                else {
                     return Response.error("I am not programmed to do that.");
-               }
+               } //Command is no longer abstract for now: Iteration 1 
           }
      }
 
-}
+
 
