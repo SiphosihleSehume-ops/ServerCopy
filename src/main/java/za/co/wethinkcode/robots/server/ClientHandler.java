@@ -5,6 +5,7 @@ import za.co.wethinkcode.robots.protocols.Request;
 import za.co.wethinkcode.robots.protocols.Response;
 import za.co.wethinkcode.robots.protocols.commands.Command;
 import za.co.wethinkcode.robots.protocols.commands.CommandHandler;
+import za.co.wethinkcode.robots.protocols.config.ConfigLoader;
 import za.co.wethinkcode.robots.robot.Robot;
 import za.co.wethinkcode.robots.protocols.config.Config;
 
@@ -22,17 +23,18 @@ public class ClientHandler implements Runnable{
 
     //Create a CommandHandler Object
     Command command;
-    final Robot targetRobot;
-    Config config = new Config(10, 10, 10, 10, 10, 10); //Default values for testing
-    final World world = new World(config);
+    private Robot targetRobot = null;
+    private final World world;
 
     //Initialize `commandHandler` and `world` objects
-    public ClientHandler(Socket socket, Command command, Robot robot) throws IOException{
+    public ClientHandler(Socket socket, World world) throws IOException{
         this.clientSocket = socket;
-        this.command = command;
-        this.targetRobot = robot;
+        this.world = world;
+//        this.targetRobot = robot;
     } //20.20.20.165
 
+    //Request Object
+//    Request request = new Request();
     @Override
     public void run() {
 
@@ -45,21 +47,35 @@ public class ClientHandler implements Runnable{
             while ((jsonLine = in.readLine()) != null) {
                 System.out.println("Received " + jsonLine);
                 try {
+                    Request request = mapper.readValue(jsonLine, Request.class);
+
                     //Parse the JSON using Jackson.
                     //Jackson: JSON as String -> Request Object
+                    if (request.getCommand() == null || request.getCommand().isBlank()) throw new IllegalArgumentException(
+                            "Command cannot be empty!"
+                    );
+
+                    if (request.getCommand().equalsIgnoreCase("launch")){
+                        if (targetRobot == null)
+                        {
+                            targetRobot = new Robot(request.getRobotName(), request.getArguments().get(0));
+                        }
+
+                    }
+                    else{
+                        out.println(mapper.writeValueAsString("use `Launch` command first"));
+                        continue;
+                    }
 
                     //Deserialization
                     // jsonLine = {"robot": "Bender", "command": "move", "arguments": ["5"]}
-                    Request request = mapper.readValue(jsonLine, Request.class);
 
                     System.out.println("From " + clientSocket.getInetAddress() + ": " + request.getCommand());
 
                     //Resolve which command to run
                     Command command = CommandHandler.create(request);
 
-                    //Create a new Robot for Launch
-                    Robot bot = new Robot(request.getRobotName());
-                    ///Sync. Ensures taht only one `ClientHandler` can touch the Robot at a time, keeping your simulation's
+                    ///Sync. Ensures that only one `ClientHandler` can touch the Robot at a time, keeping your simulation's
                     ///consistent
                     Response response;
                     synchronized (world) {
@@ -69,8 +85,9 @@ public class ClientHandler implements Runnable{
                         //Jackson Response object -> JSON String
                         //Serialization
                         jsonResponse = mapper.writeValueAsString(response);
-                        out.println(mapper.writeValueAsString(jsonResponse)); //RETURN:mapper.writeValueAsString(response);
+                        System.out.println(mapper.writeValueAsString(jsonResponse)); //RETURN:mapper.writeValueAsString(response);
                     }
+//                    System.out.println(world.robotCount());
                 } catch (Exception e) {
                     out.print(mapper.writeValueAsString(Response.error(" " + e.getMessage())));
                 }

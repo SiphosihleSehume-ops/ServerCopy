@@ -9,25 +9,30 @@ import java.util.Map;
 
 public class LaunchCommand extends Command {
     private final List<String> arguments;
-    private Position pos = new Position(5, 4);
+//    private Position pos = new Position(5, 4);
 
     public LaunchCommand(List<String> arguments) {
         this.arguments = arguments;
     }
 
     @Override
-    public Response execute(Robot target, World world) { // Added World as a parameter
-        if (world.isFull()) {
-            return Response.error("No more space in this world");
-        }
+    public Response execute(Robot target, World world) {
+        // Added World as a parameter
+
+//        if (world.isFull()) {
+//            return Response.error("No more space in this world");
+//        }
+
+
 
         // Logic to add robot to the world
-        world.addRobot(target, pos);
+       world.addRobot(target);
+        System.out.println(world.robotCount());
 
         // Get world state and robot state for the DTO response
         Map<String, Object> data = Map.of(
                 "position", target.getCurrentPosition().toString(),
-                "visibility", world.getVisibility()
+                "visibility", world.visibility()
         );
 
         return Response.ok(data, target.state());

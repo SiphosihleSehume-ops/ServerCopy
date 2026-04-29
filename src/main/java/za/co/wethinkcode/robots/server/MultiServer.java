@@ -4,6 +4,7 @@ import za.co.wethinkcode.flow.Recorder;
 import za.co.wethinkcode.robots.protocols.Request;
 import za.co.wethinkcode.robots.protocols.commands.Command;
 import za.co.wethinkcode.robots.protocols.commands.LaunchCommand;
+import za.co.wethinkcode.robots.protocols.config.ConfigLoader;
 import za.co.wethinkcode.robots.robot.Robot;
 import za.co.wethinkcode.robots.robot.RobotType;
 
@@ -22,15 +23,18 @@ public class MultiServer {
         //Declare and initialize port number
         Request request = new Request();
         RobotType botType = RobotType.SHOOTER;
-        int port = 5002;
+        int port = 5003;
         int MAX_CLIENTS = 50;
+        World world = new World(ConfigLoader.load());
+        world.createRandomObstacles();
         //We instantiate a ServerSocket object; "Turns on Server" at a specific entrance gate (port)
         @SuppressWarnings("resource") ServerSocket serverSocket = new ServerSocket(port);
         System.out.println("Server listening on port " + port);
 
         //Objects so .execute() does not return `null`
-        Command command = new LaunchCommand(request.getArguments());
-        Robot targetRobot = new Robot(request.getRobotName(), botType);
+//        Command command = new LaunchCommand(request.getArguments());
+//        Robot targetRobot = new Robot(request.getRobotName(), botType);
+
 
         ExecutorService executor = Executors.newFixedThreadPool(MAX_CLIENTS);
 
@@ -46,7 +50,8 @@ public class MultiServer {
                 System.out.println("Client connected: " + clientSocket.getInetAddress());
 
                 //Send Client Request to Server
-                executor.execute(new ClientHandler(clientSocket, command, targetRobot));
+                executor.execute(new ClientHandler(clientSocket, world));
+
 
             }
             catch(IOException e){

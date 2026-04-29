@@ -13,7 +13,7 @@ public class Client {
         //Unique: Declare and initialize `localhost`
 //        execution service
         String host = "localhost";
-        int port = 5002;
+        int port = 5003;
         ObjectMapper mapper = new ObjectMapper();
 
         try (//Instantiate client socket
