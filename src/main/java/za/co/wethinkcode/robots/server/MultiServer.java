@@ -23,7 +23,7 @@ public class MultiServer {
         //Declare and initialize port number
         Request request = new Request();
         RobotType botType = RobotType.SHOOTER;
-        int port = 5003;
+        int port = 9001;
         int MAX_CLIENTS = 50;
         World world = new World(ConfigLoader.load());
         world.createRandomObstacles();

@@ -27,7 +27,7 @@ public class LaunchCommand extends Command {
 
         // Logic to add robot to the world
        world.addRobot(target);
-        System.out.println(world.robotCount());
+       System.out.println(world.robotCount());
 
         // Get world state and robot state for the DTO response
         Map<String, Object> data = Map.of(

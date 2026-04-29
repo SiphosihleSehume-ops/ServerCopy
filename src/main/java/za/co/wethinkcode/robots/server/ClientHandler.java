@@ -7,8 +7,6 @@ import za.co.wethinkcode.robots.protocols.commands.Command;
 import za.co.wethinkcode.robots.protocols.commands.CommandHandler;
 import za.co.wethinkcode.robots.protocols.config.ConfigLoader;
 import za.co.wethinkcode.robots.robot.Robot;
-import za.co.wethinkcode.robots.protocols.config.Config;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,8 +44,11 @@ public class ClientHandler implements Runnable{
             String jsonLine;
             while ((jsonLine = in.readLine()) != null) {
                 System.out.println("Received " + jsonLine);
+                Request request = mapper.readValue(jsonLine, Request.class);
+                System.out.println(request);
                 try {
-                    Request request = mapper.readValue(jsonLine, Request.class);
+//                    Request request = mapper.readValue(jsonLine, Request.class);
+
 
                     //Parse the JSON using Jackson.
                     //Jackson: JSON as String -> Request Object
@@ -55,16 +56,13 @@ public class ClientHandler implements Runnable{
                             "Command cannot be empty!"
                     );
 
-                    if (request.getCommand().equalsIgnoreCase("launch")){
-                        if (targetRobot == null)
-                        {
+                    if (request.getCommand().equalsIgnoreCase("launch")) {
+                        if (targetRobot == null) {
                             targetRobot = new Robot(request.getRobotName(), request.getArguments().get(0));
+                        } else {
+                            out.println(mapper.writeValueAsString("you already have a robot"));
+                            continue;
                         }
-
-                    }
-                    else{
-                        out.println(mapper.writeValueAsString("use `Launch` command first"));
-                        continue;
                     }
 
                     //Deserialization
@@ -78,22 +76,25 @@ public class ClientHandler implements Runnable{
                     ///Sync. Ensures that only one `ClientHandler` can touch the Robot at a time, keeping your simulation's
                     ///consistent
                     Response response;
-                    synchronized (world) {
-                        //Response == Handling Command (Execute)
-                        response = command.execute(targetRobot, world);
-                        String jsonResponse;
-                        //Jackson Response object -> JSON String
-                        //Serialization
-                        jsonResponse = mapper.writeValueAsString(response);
-                        System.out.println(mapper.writeValueAsString(jsonResponse)); //RETURN:mapper.writeValueAsString(response);
-                    }
+                    //Response == Handling Command (Execute)
+                    response = command.execute(targetRobot, world);
+                    String jsonResponse;
+                    //Jackson Response object -> JSON String
+                    //Serialization
+                    jsonResponse = mapper.writeValueAsString(response);
+                    System.out.println(jsonResponse);
+                    out.println(jsonResponse); //RETURN:mapper.writeValueAsString(response);
+
 //                    System.out.println(world.robotCount());
                 } catch (Exception e) {
-                    out.print(mapper.writeValueAsString(Response.error(" " + e.getMessage())));
+                    out.println(mapper.writeValueAsString(Response.error(" " + e.getMessage())));
+                } finally {
+                    System.out.println("Now here");
                 }
             }
         } catch (IOException e) {
             System.out.println("Client " + clientSocket.getInetAddress() + " disconnected.");
+            System.out.println("FELL ON CATCH");
         } finally {
             try {
                 clientSocket.close();

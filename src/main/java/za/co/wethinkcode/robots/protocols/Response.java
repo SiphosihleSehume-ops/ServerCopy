@@ -34,15 +34,15 @@ public class Response {
     public static Response ok(Map<String, Object> data, Map<String, Object> target) {
         Response response = new Response();
         response.setResult("OK");
-        response.setData(data);
-        response.setState(target);
+        response.setStatus(data);
+        response.setRobotState(target);
         return response;
     }
 
     public static Response error(String message) {
         Response response = new Response();
         response.setResult("ERROR");
-        response.setData(Map.of("message", "Placeholder")); //Replace with Map<> object if needed
+        response.setStatus(Map.of("message", "Forward")); //Replace with Map<> object if needed
         // state remains null for errors per your spec
         return response;
     }
@@ -67,10 +67,10 @@ public class Response {
         this.result = result;
     }
 
-    public void setData(Map<String, Object> status) {
+    public void setStatus(Map<String, Object> status) {
         this.data = status;
     }
 
-    public void setState(Map<String, Object> state) {this.worldState = state; }
+    public void setRobotState(Map<String, Object> state) {this.worldState = state; }
 
 }
