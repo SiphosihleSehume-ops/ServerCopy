@@ -10,33 +10,41 @@ import java.util.Scanner;
 
 public class Client {
     public static void main(String[] args) throws IOException {
-        int port = 5001;
+        //Unique: Declare and initialize `localhost`
+//        execution service
         String host = "localhost";
+        int port = 5002;
         ObjectMapper mapper = new ObjectMapper();
-        Scanner scanner = new Scanner(System.in);
 
-        try (Socket clientSocket = new Socket(host, port);
+        try (//Instantiate client socket
+             Socket clientSocket = new Socket(host, port);
+             //Build `output` pipeline object
              PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+             //Build `input` pipeline object
              BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        ) {
-            //Let the client know that they connected successfully to the server
+             //Build `input through the CMD line`
+             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+        ){
             System.out.println("Client " + clientSocket.getInetAddress() + " connected successfully!");
-            System.out.println("Client connected. Type JSON then Enter.");
+            System.out.println("Type JSON and press enter: ");
 
-            String jsonLine;
-            while ((jsonLine = scanner.nextLine()) != null) {
-                //Serialize request
-                String request = mapper.writeValueAsString(jsonLine);
-                out.println(request); //Sends information to the Server ? .write()
+            //Sending data to server
+            String userInput;
+            while ((userInput = stdIn.readLine()) != null) {
+                //Send data to server
+                out.println(userInput);
 
-                String response = in.readLine(); //Keeps the Client window open for incoming responses
-                //Serialize (OBJECT -> JSON str)
-                Response json = mapper.readValue(response,  Response.class);
+
+                //Wait for server responsive
+                String response = in.readLine();
+
+                Response json = mapper.readValue(response, Response.class);
                 String prettyResponse = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
-                System.out.println("Received response:\n " + prettyResponse);
+                System.out.println("Server responded:\n " + prettyResponse);
 
-                if ("quit".equalsIgnoreCase(jsonLine)) break;
+                if ("quit".equalsIgnoreCase(userInput)) break;
             }
         }
+
     }
 }

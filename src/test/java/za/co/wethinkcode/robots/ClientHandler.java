@@ -2,6 +2,8 @@ package za.co.wethinkcode.robots;
 
 import org.junit.jupiter.api.Test;
 import za.co.wethinkcode.robots.protocols.commands.Command;
+import za.co.wethinkcode.robots.protocols.commands.LaunchCommand;
+import za.co.wethinkcode.robots.protocols.commands.LookCommand;
 import za.co.wethinkcode.robots.robot.Robot;
 
 
@@ -25,7 +27,7 @@ class ClientHandlerTest {
         // 1. Arrange: Create real dependencies
         // Assuming RobotType is an Enum (e.g., RobotType.NORMAL)
         Robot testRobot = new Robot("HAL", RobotType.SHOOTER);
-        Command commandProcessor = new Command();
+        Command commandProcessor = new LaunchCommand();
 
         // 2. Mock the Socket using mockito-core
         Socket mockSocket = mock(Socket.class);
