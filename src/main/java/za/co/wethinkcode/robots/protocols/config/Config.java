@@ -47,6 +47,7 @@ public record Config(
         validateTime(reloadTime);
         validateTime(repairTime);
     }
+
     private void validateSize(int width, int height){
         if (width < 1 || height < 1){
             throw new IllegalArgumentException("Invalid world size");

@@ -44,6 +44,13 @@ public class World {
         this.repairTime = settings.repairTime();
     }
 
+    public Map<Position, Robot> getRobotPositions() {
+        return robotPositions;
+    }
+
+    public ArrayList<Obstacle> getObstacle() {
+        return obstacles;
+    }
     public int visibility(){
         return visibility;
     }

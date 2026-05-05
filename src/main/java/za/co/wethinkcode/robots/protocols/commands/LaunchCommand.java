@@ -1,6 +1,5 @@
 package za.co.wethinkcode.robots.protocols.commands;
 
-import za.co.wethinkcode.robots.protocols.Position;
 import za.co.wethinkcode.robots.protocols.Response;
 import za.co.wethinkcode.robots.robot.Robot;
 import za.co.wethinkcode.robots.server.World;
@@ -18,12 +17,6 @@ public class LaunchCommand extends Command {
     @Override
     public Response execute(Robot target, World world) {
         // Added World as a parameter
-
-//        if (world.isFull()) {
-//            return Response.error("No more space in this world");
-//        }
-
-
 
         // Logic to add robot to the world
        world.addRobot(target);

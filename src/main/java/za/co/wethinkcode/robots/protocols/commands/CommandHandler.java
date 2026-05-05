@@ -2,6 +2,12 @@ package za.co.wethinkcode.robots.protocols.commands;
 
 import za.co.wethinkcode.robots.protocols.Request;
 
+/**
+ * <p>Serves as the Translator. Takes in a raw String like
+ * "Launch" and decides which objects to build.</p>
+ *
+ * @return a new {@link Command} object based on the command name
+ */
 public class CommandHandler {
     public static Command create(Request request) {
         String cmdName = request.getCommand().toLowerCase();
@@ -13,3 +19,4 @@ public class CommandHandler {
         };
     }
 }
+

@@ -28,39 +28,22 @@ public abstract class Command {
      * @return A Response DTO to be serialized and sent back to the client.
      */
     public abstract Response execute(Robot target, World world);
+
+    public boolean executeServer(World world){
+
+        return true;
+    }
 }
 
-
-
-
-
-//public class Command {
-//
-////     public abstract Response execute(Robot targetRobot);
-//
-//          private final Request request = new Request();
-//          private final String launch = "Launch";
-//          public World worldState;
-//
-//          private final Map<String, String> data = Map.of(
-//                  "key1", "value1",
-//                  "key2", "value2"
-//          );
-//
-//          public Response execute(Robot target) {
-//
-//               if (!request.getCommand().equals("Launch")) {
-//                    return Response.error("I am not programmed to do that.");
-//               }
-//
-//               if (launch.equalsIgnoreCase("LAUNCH")){
-//                   return Response.ok(worldState.state(target), target.state());
-//               }
-//               else {
-//                    return Response.error("I am not programmed to do that.");
-//               } //Command is no longer abstract for now: Iteration 1
-//          }
-//     }
-//
-//
-//
+/** Ohh The Reason is to avoids having a "God Object":
+ * An Object filled wiyth a lot of if/eklif statements which couldfd result
+ * in messy code.
+ * For Example:
+ * if (cmdName.equals("launch")) {
+ *             // ... 20 lines of launch logic ...
+ *         } else if (cmdName.equals("look")) {
+ *            ***
+ *         } else if (cmdName.equals("move")) {
+ *             ****
+ *         }
+ */

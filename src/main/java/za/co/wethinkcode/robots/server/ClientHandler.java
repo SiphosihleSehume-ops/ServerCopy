@@ -1,17 +1,15 @@
 package za.co.wethinkcode.robots.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import za.co.wethinkcode.robots.protocols.Request;
-import za.co.wethinkcode.robots.protocols.Response;
+import za.co.wethinkcode.robots.protocols.*;
 import za.co.wethinkcode.robots.protocols.commands.Command;
 import za.co.wethinkcode.robots.protocols.commands.CommandHandler;
-import za.co.wethinkcode.robots.protocols.config.ConfigLoader;
+import za.co.wethinkcode.robots.protocols.commands.DumpCommand;
+import za.co.wethinkcode.robots.protocols.commands.QuitCommand;
 import za.co.wethinkcode.robots.robot.Robot;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ClientHandler implements Runnable{
     //Implement ObjectMapper
@@ -20,7 +18,6 @@ public class ClientHandler implements Runnable{
     private final Socket clientSocket;
 
     //Create a CommandHandler Object
-    Command command;
     private Robot targetRobot = null;
     private final World world;
 
@@ -28,13 +25,31 @@ public class ClientHandler implements Runnable{
     public ClientHandler(Socket socket, World world) throws IOException{
         this.clientSocket = socket;
         this.world = world;
-//        this.targetRobot = robot;
-    } //20.20.20.165
+    }
 
-    //Request Object
-//    Request request = new Request();
+
+
     @Override
     public void run() {
+
+//        System.out.println("""
+//                        Enter:
+//                            Q - SHUTDOWN SERVER
+//                            D - DUMP DATA
+//                            """);
+//
+//        System.out.println("Enter a command of choice: ");
+//        String serverInput = input.nextLine();
+//        Command command;
+//
+//        switch (serverInput) {
+//            case "Q" -> command = new QuitCommand();
+//            case "D" -> command =  new DumpCommand();
+//            default -> Response.error("Invalid Server Response");
+//        }
+//
+//
+//        input.close();
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              //flush forces all buffered data to be written to their destination
@@ -43,12 +58,13 @@ public class ClientHandler implements Runnable{
             //Take in jsonLine; block until; client engages
             String jsonLine;
             while ((jsonLine = in.readLine()) != null) {
+
+//
                 System.out.println("Received " + jsonLine);
                 Request request = mapper.readValue(jsonLine, Request.class);
-                System.out.println(request);
+//                System.out.println(request);
                 try {
 //                    Request request = mapper.readValue(jsonLine, Request.class);
-
 
                     //Parse the JSON using Jackson.
                     //Jackson: JSON as String -> Request Object
@@ -82,14 +98,12 @@ public class ClientHandler implements Runnable{
                     //Jackson Response object -> JSON String
                     //Serialization
                     jsonResponse = mapper.writeValueAsString(response);
-                    System.out.println(jsonResponse);
-                    out.println(jsonResponse); //RETURN:mapper.writeValueAsString(response);
+//                    System.out.println(jsonResponse);
 
-//                    System.out.println(world.robotCount());
+                out.println(jsonResponse); //RETURN:mapper.writeValueAsString(response)
+
                 } catch (Exception e) {
                     out.println(mapper.writeValueAsString(Response.error(" " + e.getMessage())));
-                } finally {
-                    System.out.println("Now here");
                 }
             }
         } catch (IOException e) {
