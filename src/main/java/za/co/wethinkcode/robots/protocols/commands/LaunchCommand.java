@@ -7,50 +7,78 @@ import java.util.List;
 import java.util.Map;
 
 public class LaunchCommand extends Command {
+    private final String robotName;
     private final List<String> arguments;
-//    private Position pos = new Position(5, 4);
 
-    public LaunchCommand(List<String> arguments) {
+    public LaunchCommand(String robotName, List<String> arguments) {
+        this.robotName = robotName;
         this.arguments = arguments;
     }
 
     @Override
     public Response execute(Robot target, World world) {
-        // Added World as a parameter
 
-        // Logic to add robot to the world
-       world.addRobot(target);
-       System.out.println(world.robotCount());
+        if (target != null) {
+            return Response.error("Robot already launched");
+        }
 
-        // Get world state and robot state for the DTO response
+        Robot newRobot = new Robot(robotName, arguments.get(0));
+        world.addRobot(newRobot);
+
         Map<String, Object> data = Map.of(
-                "position", target.getCurrentPosition().toString(),
+                "position", newRobot.getCurrentPosition().toString(),
                 "visibility", world.visibility()
         );
 
-        return Response.ok(data, target.state());
+        return Response.ok(data, newRobot.state());
     }
 }
+
+//Revised code logic:
+//public class CommandHandler {
 //
-//import za.co.wethinkcode.robots.protocols.Response;
-//import za.co.wethinkcode.robots.robot.Robot;
-//import za.co.wethinkcode.robots.server.World;
+//    public static Command create(Request request) {
+//        String cmd = request.getCommand().toLowerCase();
 //
-//import java.util.Map;
+//        return switch (cmd) {
+//            case "launch" -> new LaunchCommand(
+//                    request.getRobotName(),
+//                    request.getArguments()
+//            );
+//            case "look" -> new LookCommand();
+//            case "move" -> new MoveCommand(request.getArguments());
+//            case "state" -> new StateCommand();
+//            case "dump" -> new DumpCommand();
+//            default -> throw new IllegalArgumentException("Unsupported command: " + cmd);
+//        };
+//    }
+//}
+
 //
 //public class LaunchCommand extends Command {
-//    private World world = new World()
+//    private final List<String> arguments;
+////    private Position pos = new Position(5, 4);
+//
+//    public LaunchCommand(List<String> arguments) {
+//        this.arguments = arguments;
+//    }
 //
 //    @Override
-//    public Response execute(Robot target) {
-//        if (world.isFull()) {
-//            return Response.error("No more space in this world");
-//        }
-//        //Needs to have access to the World
+//    public Response execute(Robot target, World world) {
+//        // Added World as a parameter
 //
+//        // Logic to add robot to the world
+//       world.addRobot(target);
+//       System.out.println(world.robotCount());
 //
-//        Map<String, Object> data = world.state(target);
+//        // Get world state and robot state for the DTO response
+//        Map<String, Object> data = Map.of(
+//                "position", target.getCurrentPosition().toString(),
+//                "visibility", world.visibility()
+//        );
 //
 //        return Response.ok(data, target.state());
 //    }
-//}
+
+
+

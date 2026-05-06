@@ -8,15 +8,38 @@ import za.co.wethinkcode.robots.protocols.Request;
  *
  * @return a new {@link Command} object based on the command name
  */
-public class CommandHandler {
-    public static Command create(Request request) {
-        String cmdName = request.getCommand().toLowerCase();
 
-        return switch (cmdName) {
-            case "launch" -> new LaunchCommand(request.getArguments());
+public class CommandHandler {
+
+    public static Command create(Request request) {
+        String cmd = request.getCommand().toLowerCase();
+
+        return switch (cmd) {
+            case "launch" -> new LaunchCommand(
+                    request.getRobotName(),
+                    request.getArguments()
+            );
 //            case "look" -> new LookCommand();
-            default -> throw new IllegalArgumentException("Unsupported command: " + cmdName);
+            case "dump" -> new DumpCommand();
+//            case "state" -> new StateCommand();
+            default -> throw new IllegalArgumentException("Unsupported command: " + cmd);
         };
     }
 }
+
+
+
+
+
+//public class CommandHandler {
+//    public static Command create(Request request) {
+//        String cmdName = request.getCommand().toLowerCase();
+//
+//        return switch (cmdName) {
+//            case "launch" -> new LaunchCommand(request.getArguments());
+////            case "look" -> new LookCommand();
+//            default -> throw new IllegalArgumentException("Unsupported command: " + cmdName);
+//        };
+//    }
+//}
 

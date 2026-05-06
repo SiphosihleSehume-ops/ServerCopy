@@ -47,6 +47,9 @@ public class World {
     public Map<Position, Robot> getRobotPositions() {
         return robotPositions;
     }
+    public Robot getRobotByName(String name) {
+        return robotPositions.get(name);
+    }
 
     public ArrayList<Obstacle> getObstacle() {
         return obstacles;

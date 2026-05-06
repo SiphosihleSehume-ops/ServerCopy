@@ -24,3 +24,18 @@ public class DumpCommand extends Command{
     }
 
 }
+
+//public class DumpCommand extends Command {
+//
+//    @Override
+//    public Response execute(Robot target, World world) {
+//
+//        Map<String, Object> data = Map.of(
+//                "robots", world.getAllRobots(),
+//                "obstacles", world.getObstacles(),
+//                "size", world.getSize()
+//        );
+//
+//        return Response.ok(data, target != null ? target.state() : null);
+//    }
+//}

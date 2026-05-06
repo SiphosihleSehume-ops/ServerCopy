@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import za.co.wethinkcode.robots.protocols.*;
 import za.co.wethinkcode.robots.protocols.commands.Command;
 import za.co.wethinkcode.robots.protocols.commands.CommandHandler;
-import za.co.wethinkcode.robots.protocols.commands.DumpCommand;
-import za.co.wethinkcode.robots.protocols.commands.QuitCommand;
+
+import za.co.wethinkcode.robots.protocols.commands.LaunchCommand;
 import za.co.wethinkcode.robots.robot.Robot;
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class ClientHandler implements Runnable{
     //Implement ObjectMapper
@@ -31,25 +30,6 @@ public class ClientHandler implements Runnable{
 
     @Override
     public void run() {
-
-//        System.out.println("""
-//                        Enter:
-//                            Q - SHUTDOWN SERVER
-//                            D - DUMP DATA
-//                            """);
-//
-//        System.out.println("Enter a command of choice: ");
-//        String serverInput = input.nextLine();
-//        Command command;
-//
-//        switch (serverInput) {
-//            case "Q" -> command = new QuitCommand();
-//            case "D" -> command =  new DumpCommand();
-//            default -> Response.error("Invalid Server Response");
-//        }
-//
-//
-//        input.close();
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              //flush forces all buffered data to be written to their destination
@@ -92,6 +72,16 @@ public class ClientHandler implements Runnable{
                     ///Sync. Ensures that only one `ClientHandler` can touch the Robot at a time, keeping your simulation's
                     ///consistent
                     Response response;
+
+                    //Synchronized Work
+                    synchronized(world) {
+                        response = command.execute(targetRobot, world);
+                    }
+
+                    //Special case where launch updates robot
+                    if (command instanceof LaunchCommand && targetRobot == null) {
+                        targetRobot = world.getRobotByName(request.getRobotName());
+                    }
                     //Response == Handling Command (Execute)
                     response = command.execute(targetRobot, world);
                     String jsonResponse;
@@ -117,6 +107,13 @@ public class ClientHandler implements Runnable{
             }
         }
     }
+
+//    public void closeQuietly() {
+//        try {
+//            in.close();
+//            out.close()
+//        } catch
+//    }
 
 }
 
