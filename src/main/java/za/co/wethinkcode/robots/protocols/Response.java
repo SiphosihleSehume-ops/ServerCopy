@@ -1,76 +1,98 @@
 package za.co.wethinkcode.robots.protocols;
 
-import za.co.wethinkcode.robots.robot.Robot;
-import za.co.wethinkcode.robots.robot.RobotStatus;
-import za.co.wethinkcode.robots.server.WorldState;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
 
+/**
+ * Represents an immutable response message sent to a client.
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response {
-//    private World world = new World(Config config);
     private String result;
-    private Map<String, Object> data; //Current robot state
-    private Map<String, Object> worldState;
+    private Map<String, Object> data;
+    private Map<String, Object> state;
 
-    public Response(String result, Map<String, Object> data) {
+
+    /**
+     * Creates a response with all fields explicitly set.
+     *
+     * @param result the result of the command, either {@code "OK"} or {@code "ERROR"}
+     * @param data   a map of command-specific key-value pairs, or {@code null} if not applicable
+     * @param state  a map representing the robot's current state, or {@code null} if not applicable
+     */
+    public Response(
+            String result,
+            Map<String, Object> data,
+            Map<String, Object> state) {
         this.result = result;
-        this.data = data; //Object returns message if the Request is not passed in correctly
-    }
-
-    public Response(String result, Map<String, Object> data, Map<String, Object> state) {
-        this.result = result; // "OK" if result successful
         this.data = data;
-        this.worldState = state;
+        this.state = state;
     }
 
-    public Response(String message) {
-        this.result = message;
-    }
-
-    public Response() {}
-
-    //Factory methods
-    public static Response ok(Map<String, Object> data, Map<String, Object> target) {
-        Response response = new Response();
-        response.setResult("OK");
-        response.setStatus(data);
-        response.setRobotState(target);
-        return response;
-    }
-
-    public static Response error(String message) {
-        Response response = new Response();
-        response.setResult("ERROR");
-        response.setStatus(Map.of("message", "Forward")); //Replace with Map<> object if needed
-        // state remains null for errors per your spec
-        return response;
-    }
-
-
-
-    //Getters
-    public String getResult() {
+    /**
+     * @return the result of the command,
+     * either {@code "OK"} or {@code "ERROR"}
+     */
+    @JsonProperty("result")
+    public String result() {
         return result;
     }
 
-    public Map<String, Object> getStatus() {
+    /**
+     * @return a map of command-specific response data,
+     * or {@code null} if not applicable
+     */
+    @JsonProperty("data")
+    public Map<String, Object> data() {
         return data;
     }
 
-    public Map<String, Object> getRobotState() {
-        return worldState;
+    /**
+     * @return a map representing the robot's current state,
+     * or {@code null} if not applicable.
+     */
+    @JsonProperty("state")
+    public Map<String, Object> state() {
+        return state;
     }
 
-    //Setters
-    public void setResult(String result) {
-        this.result = result;
+    /**
+     * Creates a successful response with both data and state.
+     *
+     * @param data  command-specific key-value pairs
+     * @param state the robot's current state
+     * @return a new {@code Response} with result {@code "OK"}
+     */
+    public static Response ok(
+            Map<String, Object> data,
+            Map<String, Object> state
+    ) {
+        return new Response("OK", data, state);
     }
 
-    public void setStatus(Map<String, Object> status) {
-        this.data = status;
+    /**
+     * Creates a successful state-only response for the {@code state} command.
+     *
+     * @param state the robot's current state
+     * @return a new {@code Response} with only the state field populated
+     */
+    public static Response ok(Map<String, Object> state) {
+        return new Response(null, null, state);
     }
 
-    public void setRobotState(Map<String, Object> state) {this.worldState = state; }
+    /**
+     * Creates an error response with a message.
+     *
+     * @param message a reason for the error
+     * @return a new {@code Response} with result {@code "ERROR"}
+     */
+    public static Response error(String message) {
+        Map<String, Object> data = Map.of(
+                "message", message
+        );
+        return new Response("ERROR", data, null);
+    }
 
 }

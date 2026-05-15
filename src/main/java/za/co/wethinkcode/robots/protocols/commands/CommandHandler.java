@@ -2,6 +2,9 @@ package za.co.wethinkcode.robots.protocols.commands;
 
 import za.co.wethinkcode.robots.protocols.Request;
 
+
+import java.util.List;
+
 /**
  * <p>Serves as the Translator. Takes in a raw String like
  * "Launch" and decides which objects to build.</p>
@@ -12,34 +15,23 @@ import za.co.wethinkcode.robots.protocols.Request;
 public class CommandHandler {
 
     public static Command create(Request request) {
-        String cmd = request.getCommand().toLowerCase();
+        String cmd = request.command().toLowerCase();
+        String name = request.robot();
+        List<Object> args = request.arguments();
 
         return switch (cmd) {
-            case "launch" -> new LaunchCommand(
-                    request.getRobotName(),
-                    request.getArguments()
-            );
+            case "launch" -> new LaunchCommand(name, args);
 //            case "look" -> new LookCommand();
-            case "dump" -> new DumpCommand();
-//            case "state" -> new StateCommand();
+//            case "dump" -> new DumpCommand();
+//            case "state" -> new StateCommand(name);
+//            case "forward" -> new ForwardCommand(name, args);
+//            case "left" -> new LeftCommand(name);
+//            case "right" -> new RightCommand(name);
+//            case "fire" -> new FireCommand(name);
+//            case "robots" -> new RobotsCommand();
+
+
             default -> throw new IllegalArgumentException("Unsupported command: " + cmd);
         };
     }
 }
-
-
-
-
-
-//public class CommandHandler {
-//    public static Command create(Request request) {
-//        String cmdName = request.getCommand().toLowerCase();
-//
-//        return switch (cmdName) {
-//            case "launch" -> new LaunchCommand(request.getArguments());
-////            case "look" -> new LookCommand();
-//            default -> throw new IllegalArgumentException("Unsupported command: " + cmdName);
-//        };
-//    }
-//}
-

@@ -2,11 +2,9 @@ package za.co.wethinkcode.robots.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import za.co.wethinkcode.robots.protocols.*;
-import za.co.wethinkcode.robots.protocols.commands.Command;
-import za.co.wethinkcode.robots.protocols.commands.CommandHandler;
-
-import za.co.wethinkcode.robots.protocols.commands.LaunchCommand;
+import za.co.wethinkcode.robots.protocols.commands.*;
 import za.co.wethinkcode.robots.robot.Robot;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -26,8 +24,6 @@ public class ClientHandler implements Runnable{
         this.world = world;
     }
 
-
-
     @Override
     public void run() {
 
@@ -39,66 +35,65 @@ public class ClientHandler implements Runnable{
             String jsonLine;
             while ((jsonLine = in.readLine()) != null) {
 
-//
                 System.out.println("Received " + jsonLine);
-                Request request = mapper.readValue(jsonLine, Request.class);
-//                System.out.println(request);
+
                 try {
-//                    Request request = mapper.readValue(jsonLine, Request.class);
+                    Request request = mapper.readValue(jsonLine, Request.class);
+                    System.out.println(request);
 
                     //Parse the JSON using Jackson.
                     //Jackson: JSON as String -> Request Object
-                    if (request.getCommand() == null || request.getCommand().isBlank()) throw new IllegalArgumentException(
+                    if (request.command() == null || request.command().isBlank()) throw new IllegalArgumentException(
                             "Command cannot be empty!"
                     );
 
-                    if (request.getCommand().equalsIgnoreCase("launch")) {
-                        if (targetRobot == null) {
-                            targetRobot = new Robot(request.getRobotName(), request.getArguments().get(0));
-                        } else {
-                            out.println(mapper.writeValueAsString("you already have a robot"));
-                            continue;
-                        }
-                    }
-
-                    //Deserialization
-                    // jsonLine = {"robot": "Bender", "command": "move", "arguments": ["5"]}
-
-                    System.out.println("From " + clientSocket.getInetAddress() + ": " + request.getCommand());
+                    System.out.println("From " + clientSocket.getInetAddress() + ": " + request.command());
 
                     //Resolve which command to run
                     Command command = CommandHandler.create(request);
 
-                    ///Sync. Ensures that only one `ClientHandler` can touch the Robot at a time, keeping your simulation's
-                    ///consistent
+                    ///
                     Response response;
 
-                    //Synchronized Work
+                    /**
+                     * <p>Sync. Ensures that only one `ClientHandler` can touch the Robot at a time, keeping your simulation's
+                     * consistent.</p>
+                     * */
                     synchronized(world) {
-                        response = command.execute(targetRobot, world);
+                        response = command.execute(world);
                     }
 
                     //Special case where launch updates robot
-                    if (command instanceof LaunchCommand && targetRobot == null) {
-                        targetRobot = world.getRobotByName(request.getRobotName());
-                    }
-                    //Response == Handling Command (Execute)
-                    response = command.execute(targetRobot, world);
+//                    if (command instanceof LaunchCommand && targetRobot == null) {
+//                        targetRobot = world.findRobotByName(request.robot());
+//                    }
+
                     String jsonResponse;
                     //Jackson Response object -> JSON String
                     //Serialization
                     jsonResponse = mapper.writeValueAsString(response);
 //                    System.out.println(jsonResponse);
 
-                out.println(jsonResponse); //RETURN:mapper.writeValueAsString(response)
+                    out.println(jsonResponse); //RETURN:mapper.writeValueAsString(response)
+
 
                 } catch (Exception e) {
                     out.println(mapper.writeValueAsString(Response.error(" " + e.getMessage())));
                 }
+//                finally {
+//                    // Clean up — remove the robot if the client disconnects
+//                    if (targetRobot != null) {
+//                        synchronized (world) {
+//                            world.removeRobot(targetRobot);
+//                        }
+//                        System.out.println("Removed robot: " + targetRobot.name());
+//                    }
+//                    try { clientSocket.close(); } catch (IOException e) { e.printStackTrace(); }
+//                }
+
             }
         } catch (IOException e) {
             System.out.println("Client " + clientSocket.getInetAddress() + " disconnected.");
-            System.out.println("FELL ON CATCH");
         } finally {
             try {
                 clientSocket.close();
@@ -108,205 +103,7 @@ public class ClientHandler implements Runnable{
         }
     }
 
-//    public void closeQuietly() {
-//        try {
-//            in.close();
-//            out.close()
-//        } catch
-//    }
-
 }
 
-// Inside your ClientHandler run() loop:
-//String jsonLine = in.readLine();
-//Request request = mapper.readValue(jsonLine, Request.class);
-//
-//// 1. Resolve which command to run
-//Command command = CommandFactory.create(request);
-//
-//// 2. Identify/Create the robot (For launch, you might create a new one)
-//Robot robot = new Robot(request.getRobotName());
-//
-//// 3. Execute against the SHARED world
-//synchronized (sharedWorld) {
-//Response response = command.execute(robot, sharedWorld);
-//    out.println(mapper.writeValueAsString(response));
-//        }
 
 
-
-//public class ClientHandler implements Runnable{
-//    //Implement ObjectMapper
-//    private final ObjectMapper mapper = new ObjectMapper(); //Thread safe and reuse possible
-//    //Owns Read/Write pipelines
-//    private final Socket clientSocket;
-//
-//    //Create a CommandHandler Object
-//    Command command;
-//    final Robot targetRobot;
-//
-//    //Initialize `commandHandler` and `world` objects
-//    public ClientHandler(Socket socket, Command command, Robot robot) throws IOException{
-//        this.clientSocket = socket;
-//        this.command = command;
-//        this.targetRobot = robot;
-//    } //20.20.20.165
-//
-//    @Override
-//    public void run() {
-//
-//        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//             //flush forces all buffered data to be written to their destination
-//             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-//
-//            //Take in jsonLine; block until; client engages
-//            String jsonLine;
-//            while ((jsonLine = in.readLine()) != null) {
-//                System.out.println("Received " + jsonLine);
-//                try {
-//                    //Parse the JSON using Jackson.
-//                    //Jackson: JSON as String -> Request Object
-//
-//                    //Deserialization
-//                    // jsonLine = {"robot": "Bender", "command": "move", "arguments": ["5"]}
-//                    Request request = mapper.readValue(jsonLine, Request.class);
-//
-//                    System.out.println("From " + clientSocket.getInetAddress() + ": " + request.getCommand());
-//
-//                    //Handling Concurrency
-//                    ///Sync. Ensures taht only one `ClientHandler` can touch the Robot at a time, keeping your simulation's
-//                    ///consistent
-//                    Response response;
-//                    synchronized (targetRobot) {
-//                        //Response == Handling Command (Execute)
-//                        response = command.execute(targetRobot);
-//                        String jsonResponse;
-//                        //Jackson Response object -> JSON String
-//                        //Serialization
-//                        jsonResponse = mapper.writeValueAsString(response);
-//                        out.println(jsonResponse); //RETURN:mapper.writeValueAsString(response);
-//                    }
-//                } catch (Exception e) {
-//                    out.print(mapper.writeValueAsString(Response.error(" " + e.getMessage())));
-//                }
-//            }
-//        } catch (IOException e) {
-//            System.out.println("Client " + clientSocket.getInetAddress() + " disconnected.");
-//        } finally {
-//            try {
-//                clientSocket.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//
-//}
-
-//Core loop: Receive -> Deserialize -> Executes -> Serialize -> Send
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//package za.co.wethinkcode.robots.server;
-//
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import za.co.wethinkcode.robots.protocols.Request;
-//import za.co.wethinkcode.robots.protocols.Response;
-//import za.co.wethinkcode.robots.protocols.commands.Command;
-//import za.co.wethinkcode.robots.robot.Robot;
-//
-//import java.io.BufferedReader;
-//import java.io.IOException;
-//import java.io.InputStreamReader;
-//import java.io.PrintWriter;
-//import java.net.Socket;
-//
-//public class ClientHandler implements Runnable{
-//    //Implement ObjectMapper
-//    private final ObjectMapper mapper = new ObjectMapper(); //Thread safe and reuse possible
-//    //Owns Read/Write pipelines
-//    private final Socket clientSocket;
-//
-//    //Create a CommandHandler Object
-//    Command command;
-//    Robot targetRobot;
-//
-//    //Initialize `commandHandler` and `world` objects
-//    public ClientHandler(Socket socket, Command command, Robot robot) throws IOException{
-//        this.clientSocket = socket;
-//        this.command = command;
-//        this.targetRobot = robot;
-//    }
-//
-//    public ClientHandler(Socket socket) {
-//        this.clientSocket = socket;
-//    }
-//
-//    @Override
-//    public void run() {
-//
-//        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//             //flush forces all buffered data to be written to their destination
-//             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-//
-//            //Take in jsonLine; block until; client engages
-//            String jsonLine;
-//            while ((jsonLine = in.readLine()) != null) {
-//                System.out.println("Received " + jsonLine);
-//
-//                //Parse the JSON using Jackson.
-//                //Jackson: JSON as String -> Request Object
-//
-//                //Deserialization
-//                // jsonLine = {"robot": "Bender", "command": "move", "arguments": ["5"]}
-//                Request request = mapper.readValue(jsonLine, Request.class);
-//
-//                System.out.println("From " + clientSocket.getInetAddress() + ":" + request.getCommand());
-//
-//                //Response == Handling Command (Execute)
-//                Response response = command.execute(targetRobot);
-//
-//                //Jackson Response object -> JSON String
-//                //Serialization
-//                String jsonResponse;
-//                jsonResponse = mapper.writeValueAsString(response);
-//                out.println(jsonResponse); //RETURN:mapper.writeValueAsString(response);
-//
-//            }
-//        } catch (IOException e) {
-//            System.out.println("Client " + clientSocket.getInetAddress() + " disconnected.");
-//    }
-////Core loop: Receive -> Deserialize -> Executes -> Serialize -> Send
-//}
-//
-//}

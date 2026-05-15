@@ -19,14 +19,14 @@ public record Config(
         @JsonProperty("shieldMax")
         int shieldMax,
 
-        @JsonProperty("nrObstacles")
-        int nrObstacles,
-
         @JsonProperty("reloadTime")
         int reloadTime,
 
         @JsonProperty("repairTime")
-        int repairTime
+        int repairTime,
+
+        @JsonProperty("nrObstacles")
+        int nrObstacles
 
 )
 {
@@ -46,8 +46,9 @@ public record Config(
         validateVisibility(visibility);
         validateTime(reloadTime);
         validateTime(repairTime);
-    }
+        if (nrObstacles < 0) throw new IllegalArgumentException("nrObstacles can't be negative");
 
+    }
     private void validateSize(int width, int height){
         if (width < 1 || height < 1){
             throw new IllegalArgumentException("Invalid world size");

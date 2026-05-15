@@ -1,55 +1,22 @@
 package za.co.wethinkcode.robots.protocols;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
+import java.util.*;
 
-//Known as DTOs: Data Transfer Objects
-public class Request {
-   //@JsonProperty
-    // Make use of the Jackson annotations here
-    @JsonProperty("robot")
-    private String robot;
+/**
+ * Represents a request message from a client
+ *
+ * @param robot the name of the robot sending the command
+ * @param command the name of the command to execute.
+ * @param arguments the arguments for the command.
+ */
 
-    @JsonProperty("command")
-    private String command;
-
-    @JsonProperty("arguments")
-    private List<String> arguments;
-
-    public Request() {} //Jackson needs a no-argument constructor
-
-    //Method Overloading
-    public Request(String robot, String command, List<String> args) {
-        this.robot = robot;
-        this.command = command;
-        this.arguments = args;
-    }
-
-    //Jackson does need your Getters and Setters
-    //Getters
-    public String getRobotName() {
-        return robot;
-    }
-
-    public String getCommand () {
-        return command;
-    }
-
-    public List<String> getArguments () {
-        return arguments;
-    }
-
-    //Setters
-    public void setRobotName(String name) {
-        this.robot = name;
-    }
-
-    public void setCommand(String cmd) {
-        this.command = cmd;
-    }
-
-    public void setArguments(List<String> args) {
-        this.arguments = args;
-    }
-
+public record Request(
+        @JsonProperty("robot")
+        String robot,
+        @JsonProperty("command")
+        String command,
+        @JsonProperty("arguments")
+        List<Object> arguments)
+{
 }
