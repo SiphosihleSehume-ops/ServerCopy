@@ -64,6 +64,13 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>6.8.0.202311291450-r</version>
         </dependency>
+
+        <!--Added this dependency-->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21</version>
+        </dependency>
     </dependencies>
 
     <build>
