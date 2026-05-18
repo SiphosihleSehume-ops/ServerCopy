@@ -200,7 +200,7 @@ public class World {
         sb.append("Obstacles : ").append(obstacleCount()).append("\n");
         sb.append("Robots    : ").append(robotCount()).append("\n");
         for (Robot r : robots()) {
-            sb.append("  ").append(r).append("\n");
+            sb.append(r).append("\n");
         }
         sb.append("==================\n");
         return sb.toString();
